@@ -1,17 +1,39 @@
-function AddContact() {
-  function handleAddContactForm(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
+import { useState } from 'react';
+
+function AddContact(props) {
+  const [messages, SetMessages] = useState({
+    errorMessage: '',
+    successMessage: '',
+  });
+  function handleAddContactForm(formData) {
     const contactData = {
       name: formData.get('name'),
       email: formData.get('email'),
       phone: formData.get('phone'),
     };
-    console.log(contactData);
+
+    try {
+      console.log(contactData);
+      const response = props.handleAddContact(contactData);
+      if (response.status == 'success') {
+        SetMessages({ errorMessage: undefined, successMessage: response.msg });
+      } else {
+        SetMessages({
+          errorMessage: response.msg,
+          successMessage: undefined,
+        });
+      }
+    } catch (error) {
+      console.error('Error adding contact', error);
+      SetMessages({
+        errorMessage: 'Error Encounterd',
+        successMessage: undefined,
+      });
+    }
   }
   return (
     <div className="border col-12 text-white p-2">
-      <form onSubmit={handleAddContactForm}>
+      <form action={handleAddContactForm}>
         <div className="row p-2">
           <div className="col-12 text-white-50 text-center h5">
             Add a new Contact
@@ -38,13 +60,18 @@ function AddContact() {
             />
           </div>
 
-          <div className="col-12 text-center text-success">Success Message</div>
-          <div className="col-12 text-center text-danger">Error Message</div>
+          {messages.successMessage && (
+            <div className="col-12 text-center text-success">
+              {messages.successMessage}
+            </div>
+          )}
+          {messages.errorMessage && (
+            <div className="col-12 text-center text-danger">
+              {messages.errorMessage}
+            </div>
+          )}
           <div className="col-12">
-            <button
-              type="submit"
-              className="btn btn-primary btn-sm form-control"
-            >
+            <button className="btn btn-primary btn-sm form-control">
               Create
             </button>
           </div>

@@ -46,6 +46,28 @@ function ContactIndex() {
     });
   }
 
+  function handleAddContact(newContact) {
+    //Validation
+    const duplicateRecord = contactList.filter((x) => {
+      if (x.name == newContact.name && x.phone == newContact.phone) {
+        return true;
+      }
+    });
+
+    if (duplicateRecord) {
+      return { status: 'error', msg: 'Duplicate record.' };
+    }
+    const newFinalContact = {
+      ...newContact,
+      id: contactList[contactList.length - 1].id + 1,
+      isFavorite: false,
+    };
+    setContactList((prevState) => {
+      return prevState.concat([newFinalContact]);
+    });
+    return { status: 'success', msg: 'Contact was added successfully.' };
+  }
+
   return (
     <div className="container" style={{ minHeight: '85vh' }}>
       <div className="py-3">
@@ -55,7 +77,7 @@ function ContactIndex() {
         </div>
         <div className="py-2">
           <div className="col-12">
-            <AddContact />
+            <AddContact handleAddContact={handleAddContact} />
           </div>
         </div>
         <div className="py-2">
